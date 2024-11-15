@@ -132,7 +132,7 @@ def test_logout():
 if __name__ == "__main__":
     # test_register()  # 測試註冊
     test_login()  # 測試登入
-    response = session.get(f"{BASE_URL}categories/2/")  # 取得分類資料
+    response = session.get(f"{BASE_URL}categories/", params={"category_type": "income"})  # 取得分類資料
     print(response.json())
     # test_create_expense()  # 測試新增記帳資料
     # test_list_expenses()  # 測試取得記帳資料

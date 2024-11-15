@@ -72,7 +72,7 @@ class CategoryListCreateView(APIView):
         categories = Category.objects.all()
         category_type = request.query_params.get("category_type", None)
         if category_type:
-            categories.filter(category_type=category_type)
+            categories = categories.filter(category_type=category_type)
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
