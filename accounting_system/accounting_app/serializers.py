@@ -20,5 +20,6 @@ class TransactionSerializer(serializers.ModelSerializer):
             "description",
             "store",
             "date",
+            "time",
             "detail",
         ]

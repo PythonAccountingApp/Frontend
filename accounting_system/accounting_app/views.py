@@ -58,7 +58,7 @@ class LoginSystem(viewsets.ViewSet):
         user = serializer.validated_data["user"]
 
         # 生成或取得 Token
-        token, created = Token.objects.get_or_create(user=user)
+        token = Token.objects.get_or_create(user=user)[0]
         return Response(
             {
                 "token": token.key,
@@ -155,15 +155,15 @@ class TransactionListCreateView(APIView):
         transactions = Transaction.objects.filter(user=request.user)
 
         category = request.query_params.get("category", None)
-        start_time = request.query_params.get("start_time", None)
-        end_time = request.query_params.get("end_time", None)
+        start_date = request.query_params.get("start_date", None)
+        end_date = request.query_params.get("end_date", None)
 
         if category:
             transactions = transactions.filter(category=category)
-        if start_time:
-            transactions = transactions.filter(date__gte=start_time)
-        if end_time:
-            transactions = transactions.filter(date__lte=end_time)
+        if start_date:
+            transactions = transactions.filter(date__gte=start_date)
+        if end_date:
+            transactions = transactions.filter(date__lte=end_date)
 
         serializer = TransactionSerializer(transactions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
