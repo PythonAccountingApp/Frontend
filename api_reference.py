@@ -56,12 +56,6 @@ def load_token_encrypted() -> str:
     except (FileNotFoundError, Exception):
         return None
 
-=======
-# 使用者帳號和密碼
-
-
-# 建立 Session 以保存登入狀態
-session = requests.Session()
 
 """
 註冊
