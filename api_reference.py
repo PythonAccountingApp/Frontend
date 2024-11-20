@@ -1,16 +1,61 @@
 import json
 import datetime
 import requests
-from asyncio import sleep
+from cryptography.fernet import Fernet
 
 # 定義 API 基本 URL
 URL = "http://127.0.0.1:8000/"
 
-# 使用者帳號和密碼
-
-
 # 建立 Session 以保存登入狀態
 session = requests.Session()
+
+
+#! 需要 cryptography 套件
+from cryptography.fernet import Fernet
+
+
+#! 需要 cryptography 套件
+# 第一次使用時，生成加密金鑰並保存
+def generate_and_save_key():
+    key = Fernet.generate_key()
+    with open("key.key", "wb") as key_file:
+        key_file.write(key)
+
+
+#! 需要 cryptography 套件
+# 加載加密金鑰
+def load_key():
+    with open("key.key", "rb") as key_file:
+        return key_file.read()
+
+
+#! 需要 cryptography 套件
+# 初始化加密器
+def initialize_cipher():
+    key = load_key()
+    return Fernet(key)
+
+
+#! 需要 cryptography 套件
+# 保存加密的 Token
+def save_token_encrypted(token: str):
+    cipher = initialize_cipher()  # 初始化加密器
+    encrypted_token = cipher.encrypt(token.encode())  # 加密 Token
+    with open("token.enc", "wb") as file:
+        file.write(encrypted_token)
+
+
+#! 需要 cryptography 套件
+# 讀取並解密 Token
+def load_token_encrypted() -> str:
+    try:
+        cipher = initialize_cipher()  # 初始化加密器
+        with open("token.enc", "rb") as file:
+            encrypted_token = file.read()
+        return cipher.decrypt(encrypted_token).decode()  # 解密 Token
+    except (FileNotFoundError, Exception):
+        return None
+
 
 """
 註冊
@@ -438,8 +483,11 @@ def delete_category(id: int) -> json:
 
 
 if __name__ == "__main__":
+    # generate_and_save_key() #! 第一次運行時需要生成金鑰
     # register("test", "123", "test.gmail.com")
-    token = login("test", "123")["token"]
+    # token = login("test", "123")["token"]
+    # save_token_encrypted(token) # 登入成功後保存 Token
+    token = load_token_encrypted() # 讀取 Token
     get_all_users()
     get_all_expense()
     # update_expense(1, "expense", 2, "晚餐", "肯德基", 299, 0)
@@ -455,4 +503,4 @@ if __name__ == "__main__":
     # create_category("測試", "income")
     # update_category(24, "測試", "expense")
     # delete_category(24)
-    logout()
+    # logout()
