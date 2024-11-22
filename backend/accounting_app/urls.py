@@ -10,6 +10,8 @@ urlpatterns = [
     path("auth/login/", views.LoginSystem.as_view({"post": "login_view"}), name="login"),
     path("auth/logout/", views.LoginSystem.as_view({"post": "logout_view"}), name="logout"),
     path("users/", views.LoginSystem.as_view({"get": "user_view"}), name="user-list"),
+    path("api/auth/password-reset/", views.PasswordResetRequestView.as_view(), name="password_reset_request"),
+    path("password-reset/<uidb64>/<token>/", views.PasswordResetView.as_view(), name="password_reset"),
     path(
         "transactions/",
         views.TransactionListCreateView.as_view(),
