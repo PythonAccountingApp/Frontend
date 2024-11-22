@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AccountingAppGtk.iml" filepath="$PROJECT_DIR$/AccountingAppGtk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/AccountingAppGtk.iml" filepath="$PROJECT_DIR$/frontend/AccountingAppGtk.iml" />
     </modules>
   </component>
 </project>
