@@ -135,3 +135,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "cheung950624@gmail.com"  # 您的 Gmail 地址
+EMAIL_HOST_PASSWORD = "nqkw zvdb jnhz kxwa"  # 應用專用密碼
+FRONTEND_URL = "http://localhost:8000"
