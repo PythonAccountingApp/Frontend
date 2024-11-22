@@ -1,8 +1,17 @@
+import json
+import requests
+from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.views import View
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +19,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Category, Transaction, User
 from .serializers import CategorySerializer, TransactionSerializer
 
@@ -84,6 +94,71 @@ class LoginSystem(viewsets.ViewSet):
         users = User.objects.all()
         data = [{"username": user.username, "email": user.email} for user in users]
         return Response(data, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class PasswordResetRequestView(View):
+    def post(self, request):
+        try:
+            # 嘗試解析 JSON 請求
+            if request.content_type == "application/json":
+                body = json.loads(request.body)
+                email = body.get("email", None)
+            else:
+                # 處理表單格式數據
+                email = request.POST.get("email", None)
+
+            # 驗證 email 是否存在
+            if not email:
+                return JsonResponse({"error": "請輸入電子郵件"}, status=400)
+
+            # 查找用戶
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            # 构建重置密碼連結
+            reset_link = f"http://localhost:8000/password-reset/{uid}/{token}/"
+
+            # 發送重置密碼郵件
+            send_mail(
+                "重置您的密碼",
+                f"請點擊以下鏈接重置密碼：\n\n{reset_link}\n\n如果未請求，請忽略此郵件。",
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+            )
+            return JsonResponse({"message": "密碼重置郵件已發送"}, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "該電子郵件未註冊"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": f"後端錯誤：{str(e)}"}, status=500)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class PasswordResetView(View):
+    permission_classes = [AllowAny]
+
+    @csrf_exempt
+    def get(self, request, uidb64, token):
+        # 顯示重置密碼表單
+        return render(request, "password_reset_form.html", {"uidb64": uidb64, "token": token})
+
+    @csrf_exempt
+    def post(self, request, uidb64, token):
+        new_password = request.POST.get("new_password")
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+            if default_token_generator.check_token(user, token):
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, "密碼重置成功！")
+                return render(request, "password_reset_successful.html", {"success": True})
+            else:
+                messages.error(request, "無效的重置連結")
+        except Exception:
+            messages.error(request, "密碼重置失敗")
+        return redirect("password_reset_request")
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
