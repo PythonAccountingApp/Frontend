@@ -18,5 +18,6 @@ token.enc
 backend/accounting_system/config.json
 
 .idea
+*/.idea
 
 venv
