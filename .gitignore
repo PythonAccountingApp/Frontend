@@ -16,3 +16,7 @@ key.key
 token.enc
 
 backend/accounting_system/config.json
+
+.idea
+
+venv
