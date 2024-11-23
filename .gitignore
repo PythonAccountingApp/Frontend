@@ -21,3 +21,6 @@ backend/accounting_system/config.json
 */.idea
 
 venv
+
+frontend/.env
+frontend/.env
