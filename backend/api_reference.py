@@ -484,22 +484,22 @@ def delete_category(id: int) -> json:
 
 if __name__ == "__main__":
     # generate_and_save_key() #! 第一次運行時需要生成金鑰
-    # register("test", "123", "test.gmail.com")
+    register("test", "123", "test.gmail.com")
     # token = login("test", "123")["token"]
     # save_token_encrypted(token) # 登入成功後保存 Token
-    token = load_token_encrypted() # 讀取 Token
-    get_all_users()
-    get_all_expense()
+    # token = load_token_encrypted() # 讀取 Token
+    # get_all_users()
+    # get_all_expense()
     # update_expense(1, "expense", 2, "晚餐", "肯德基", 299, 0)
-    get_expense(15)
-    get_expense(
-        None, {"category": 1, "start_date": "2021-01-01", "end_date": "2021-12-31"}
-    )
+    # get_expense(15)
+    # get_expense(
+    #     None, {"category": 1, "start_date": "2021-01-01", "end_date": "2021-12-31"}
+    # )
     # create_expense("expense", 1, "午餐", "麥當勞", 100, 0)
     # delete_expense(14)
-    get_all_categories()
-    get_category(1)
-    get_category(None, {"category_type": "income"})
+    # get_all_categories()
+    # get_category(1)
+    # get_category(None, {"category_type": "income"})
     # create_category("測試", "income")
     # update_category(24, "測試", "expense")
     # delete_category(24)

@@ -7,7 +7,7 @@ import requests
 import json
 
 from flask.cli import load_dotenv
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from login_server import GithubLoginServer
 
 gi.require_version('Gtk', '4.0')
@@ -23,14 +23,19 @@ class MainWindow(Gtk.ApplicationWindow):
     def githubLoginThread(self):
         tis = GithubLoginServer()
         tis.GithubLoginServerStart()
-        webbrowser.open('https://github.com/login/oauth/authorize?client_id=Ov23lioWPPeA5G5sBzFk', new=2)
+        webbrowser.open('https://github.com/login/oauth/authorize?client_id=Ov23liw65tS7UK7PUOx7', new=2)
         while tis.callbackData is None:
             pass
         self.githubToken.set_text(tis.callbackData)
 
         load_dotenv()
         print(tis.callbackData)
-        url = f"https://github.com/login/oauth/access_token?client_id=Ov23lioWPPeA5G5sBzFk&client_secret={os.getenv("GITHUB_CLIENT_SECRETS")}&code={tis.callbackData}"
+        with open(
+            "config.json",
+            "r",
+        ) as f:
+            CONFIG = json.load(f)
+        url = f"https://github.com/login/oauth/access_token?client_id=Ov23liw65tS7UK7PUOx7&client_secret={CONFIG['github']['secret_key']}&code={tis.callbackData}"
         headers = {
             'Content-Type': 'application/json',
         }
@@ -40,13 +45,20 @@ class MainWindow(Gtk.ApplicationWindow):
         responseText = response.text.split("&")
         accessCode=responseText[0].split("=")[1]
         tokenType=responseText[2].split("=")[1]
-        print(tokenType)
-
+        print(f"accessCode={accessCode}")
+        session = requests.Session()
+        new_user_data = {
+            "username": "123",
+            "password": "123",
+            "email": "",
+        }
+        response = session.post("http://0.0.0.0:8000/auth/register/", json=new_user_data)
+        print(response.json())
+        response = session.post("http://0.0.0.0:8000/auth/github/", json={"access_token":accessCode,"token_type":tokenType})
+        print(response.json())
     def githubLogin(self, button):
         thread = threading.Thread(target=self.githubLoginThread)
         thread.start()
-
-
 
         pass
 

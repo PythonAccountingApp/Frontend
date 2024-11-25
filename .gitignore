@@ -15,7 +15,7 @@ key.key
 
 token.enc
 
-backend/accounting_system/config.json
+config.json
 
 .idea
 */.idea

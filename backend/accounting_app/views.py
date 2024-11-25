@@ -24,7 +24,7 @@ from .models import Category, Transaction, User
 from .serializers import CategorySerializer, TransactionSerializer
 
 
-class LoginSystem(viewsets.ViewSet):
+class LoginView(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @csrf_exempt
@@ -94,6 +94,65 @@ class LoginSystem(viewsets.ViewSet):
         users = User.objects.all()
         data = [{"username": user.username, "email": user.email} for user in users]
         return Response(data, status=status.HTTP_200_OK)
+
+
+class GithubLoginView(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+
+    def verify_token(self, token):
+        """
+        驗證 GitHub 的 OAuth token 並獲取使用者資訊
+        """
+        try:
+            user_info_url = "https://api.github.com/user"
+            headers = {"Authorization": f"token {token}"}
+            response = requests.get(user_info_url, headers=headers)
+
+            if response.status_code != 200:
+                raise ValueError("無法驗證 GitHub token")
+            return response.json()
+        except Exception as e:
+            raise ValueError(f"Token 驗證失敗: {str(e)}")
+
+    @csrf_exempt
+    @action(detail=False, methods=["post"], url_path="github")
+    def login_view(self, request):
+        token = request.data.get("access_token")
+        if token is None:
+            return JsonResponse({"error": "缺少 token"}, status=400)
+        github_user = self.verify_token(token)
+        if github_user:
+            username = github_user.get("login")
+            email = github_user.get("email") if github_user.get("email") else ""
+            if User.objects.filter(username=username).exists():
+                user = User.objects.get(username=username)
+                token = Token.objects.get_or_create(user=user)[0]
+                return Response(
+                    {
+                        "token": token.key,
+                        "user_id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                user = User.objects.create(
+                    username=username, password=make_password(settings.GITHUB_DEFAULT_PASSWORD), email=email
+                )
+                user = User.objects.get(username=username)
+                token = Token.objects.get_or_create(user=user)[0]
+                return Response(
+                    {
+                        "token": token.key,
+                        "user_id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return JsonResponse({"error": "無法驗證 GitHub token"}, status=400)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
