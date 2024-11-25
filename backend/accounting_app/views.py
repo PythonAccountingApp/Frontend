@@ -24,7 +24,7 @@ from .models import Category, Transaction, User
 from .serializers import CategorySerializer, TransactionSerializer
 
 
-class LoginSystem(viewsets.ViewSet):
+class LoginView(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     @csrf_exempt

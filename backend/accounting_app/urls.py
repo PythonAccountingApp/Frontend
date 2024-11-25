@@ -4,12 +4,12 @@ from . import views
 urlpatterns = [
     path(
         "auth/register/",
-        views.LoginSystem.as_view({"post": "register_view"}),
+        views.LoginView.as_view({"post": "register_view"}),
         name="register",
     ),
-    path("auth/login/", views.LoginSystem.as_view({"post": "login_view"}), name="login"),
-    path("auth/logout/", views.LoginSystem.as_view({"post": "logout_view"}), name="logout"),
-    path("users/", views.LoginSystem.as_view({"get": "user_view"}), name="user-list"),
+    path("auth/login/", views.LoginView.as_view({"post": "login_view"}), name="login"),
+    path("auth/logout/", views.LoginView.as_view({"post": "logout_view"}), name="logout"),
+    path("users/", views.LoginView.as_view({"get": "user_view"}), name="user-list"),
     path("api/auth/password-reset/", views.PasswordResetRequestView.as_view(), name="password_reset_request"),
     path("password-reset/<uidb64>/<token>/", views.PasswordResetView.as_view(), name="password_reset"),
     path(
