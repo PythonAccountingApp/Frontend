@@ -47,14 +47,7 @@ class MainWindow(Gtk.ApplicationWindow):
         tokenType=responseText[2].split("=")[1]
         print(f"accessCode={accessCode}")
         session = requests.Session()
-        new_user_data = {
-            "username": "123",
-            "password": "123",
-            "email": "",
-        }
-        response = session.post("http://0.0.0.0:8000/auth/register/", json=new_user_data)
-        print(response.json())
-        response = session.post("http://0.0.0.0:8000/auth/github/", json={"access_token":accessCode,"token_type":tokenType})
+        response = session.post("http://0.0.0.0:8000/auth/github/", json={"access_token": accessCode,"token_type":tokenType})
         print(response.json())
     def githubLogin(self, button):
         thread = threading.Thread(target=self.githubLoginThread)
