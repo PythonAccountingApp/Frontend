@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Callback</title>
+</head>
+<body>
+<script>
+    // 取得 URL 的 fragment 部分
+    const fragment = window.location.hash.substring(1);
+
+    // 將 fragment 轉為查詢參數格式
+    const params = new URLSearchParams(fragment);
+
+    // 提取 access_token
+    const accessToken = params.get('access_token');
+    const tokenType = params.get('token_type');
+    const expires_in = params.get('expires_in');
+    const scope = params.get('scope');
+    const authuser = params.get('authuser');
+    const prompt = params.get('prompt');
+
+    // 將 access_token 發送到伺服器
+    if (accessToken && tokenType && expires_in && scope && authuser && prompt) {
+        window.location.replace(`http://localhost:53269/google/callback/handle?access_token=${accessToken}&token_type=${tokenType}&expires_in=${expires_in}&scope=${scope}&authuser=${authuser}&prompt=${prompt}`);
+    } else {
+        window.location.replace(`http://localhost:53269/google/callback/handle`);
+    }
+</script>
+<h1>Redirecting...</h1>
+</body>
+</html>
