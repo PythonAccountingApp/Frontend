@@ -29,6 +29,8 @@ class LoginServer:
             self.callbackData = request.args.get("code")
             return render_template("login_successful.html")
         else:
+            if self.callbackData is not None or self.callbackData is not "ERROR":
+                return render_template("login_failure_github.html")
             self.callbackData = "ERROR"
         return render_template("login_failure_github.html")
 
@@ -43,6 +45,8 @@ class LoginServer:
             self.callbackData = [request.args.get("access_token"),request.args.get("token_type")]
             return render_template("login_successful.html")
         else:
+            if self.callbackData is not None or self.callbackData is not "ERROR":
+                return render_template("login_failure_google.html")
             self.callbackData = "ERROR"
             return render_template("login_failure_google.html")
 
