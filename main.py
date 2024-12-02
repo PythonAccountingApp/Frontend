@@ -7,10 +7,8 @@ import requests
 import json
 
 from PyThreadKiller import PyThreadKiller
-from flask.cli import load_dotenv
-from dotenv import load_dotenv
 
-from frontend.AccountingPage import AccountingPage
+from AccountingPage import AccountingPage
 from login_server import LoginServer
 
 gi.require_version('Gtk', '4.0')
@@ -36,7 +34,6 @@ class MainWindow(Gtk.ApplicationWindow):
             pass
         self.github_token_label.set_text(self.login_server.callbackData)
 
-        load_dotenv()
         print(self.login_server.callbackData)
 
         url = f"https://github.com/login/oauth/access_token?client_id={CONFIG['github']['client_id']}&client_secret={CONFIG['github']['secret_key']}&code={self.login_server.callbackData}"
@@ -55,12 +52,12 @@ class MainWindow(Gtk.ApplicationWindow):
         print(response.json())
         if response.status_code == 200 :
             accountingAddBuilder = Gtk.Builder()
-            accountingAddBuilder.add_from_file("frontend/AccountingAdd/ui.ui")
+            accountingAddBuilder.add_from_file("AccountingAdd/ui.ui")
             mainBox = accountingAddBuilder.get_object("MainScreen")
             Gtk.StyleContext().remove_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider)
 
             self.accountingCssProvider = Gtk.CssProvider()
-            self.accountingCssProvider.load_from_path("frontend/AccountingAdd/ui.css")
+            self.accountingCssProvider.load_from_path("AccountingAdd/ui.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
             self.stack.remove(self.stack.get_child_by_name("ThirdLogin"))
@@ -167,7 +164,7 @@ class MainWindow(Gtk.ApplicationWindow):
         main_box.append(self.github_token_label)
 
         self.thirdLoginCssProvider = Gtk.CssProvider()
-        self.thirdLoginCssProvider.load_from_path("frontend/src/css/ThirdLogin.css")
+        self.thirdLoginCssProvider.load_from_path("src/css/ThirdLogin.css")
         Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider,
                                                     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
