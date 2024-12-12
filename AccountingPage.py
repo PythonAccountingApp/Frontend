@@ -11,7 +11,7 @@ from gi.repository import Gtk, GLib
 
 
 class AccountingPage(Gtk.ApplicationWindow):
-    def __init__(self, main_box, id=56):
+    def __init__(self, main_box, id=62):
         super().__init__()
         self.status = 0
         self.main_box = Gtk.Box()
@@ -303,19 +303,18 @@ class AccountingPage(Gtk.ApplicationWindow):
                 button.set_label("All fields need to be filled in with values.")
                 return
             texts[key] = text
-            print(text)
         if id == -1:
             response = ExpenseHandler().create_expense(token=self.token, transaction_type=self.selected[0],
                                                        category=self.selected[1],
                                                        description=texts["description"], store=texts["store"],
-                                                       amount=float(texts["amount"]), discount=float(texts["discount"]),
+                                                       amount=round(float(texts["amount"]),2), discount=round(float(texts["discount"]),2),
                                                        time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
                                                        detail=texts["detail"])
         else:
             response = ExpenseHandler().update_expense(token=self.token, id=id, transaction_type=self.selected[0],
                                                        category=self.selected[1],
                                                        description=texts["description"], store=texts["store"],
-                                                       amount=float(texts["amount"]), discount=float(texts["discount"]),
+                                                       amount=round(float(texts["amount"]),2), discount=round(float(texts["discount"]),2),
                                                        time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
                                                        detail=texts["detail"])
 
@@ -365,6 +364,7 @@ class AccountingPage(Gtk.ApplicationWindow):
         else:
             category_button_list = self.income_button_list
         category_name = CategoryHandler().get_category(token=self.token, id=category)['name']
+        print(transaction_type)
         category_button = [x for x in category_button_list if x.get_label() == category_name][0]
         self.category_button_clicked(category_button, transaction_type, category)
         signal_handlers_destroy(self.save_button)
