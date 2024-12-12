@@ -1,6 +1,8 @@
 import os
 import json
 import datetime
+from http.client import responses
+
 import requests
 from cryptography.fernet import Fernet
 
@@ -192,10 +194,11 @@ class ExpenseHandler:
         )  # ! need to add headers(token)
         if response.status_code == 200:
             print("取得特定記帳資料成功:", response.json())
-            return response.json()
+            # return response.json()
         else:
             print("取得特定記帳資料失敗:", response.json())
-            return response.json()
+            # return response.json()
+        return response
 
     """
     新增記帳資料
@@ -288,6 +291,7 @@ class ExpenseHandler:
     """
 
     def update_expense(
+            self,
             token: str,
             id: int,
             transaction_type: str,
@@ -318,10 +322,11 @@ class ExpenseHandler:
         )  # ! need to add headers(token)
         if response.status_code == 200:
             print("更新記帳資料成功:", response.json())
-            return response.json()
+            # return response.json()
         else:
             print("更新記帳資料失敗:", response.json())
-            return response.json()
+            # return response.json()
+        return response
 
     """
     刪除記帳資料
@@ -381,7 +386,7 @@ class CategoryHandler:
     ]
     """
 
-    def get_category(token: str, id: int = None, params: json = None) -> json:
+    def get_category(self,token: str, id: int = None, params: json = None) -> json:
         category_url = f"{URL}categories/{id}/" if id else f"{URL}categories/"
         header = {"Authorization": f"Token {token}"}  # token is from login()
         response = session.get(

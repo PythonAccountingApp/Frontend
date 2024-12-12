@@ -1,11 +1,8 @@
-import json
-
 import gi
 
 import re
 
-from gi.repository.Gdk import Cursor
-from pycparser.ply.yacc import token
+from gi.repository.GObject import signal_handlers_destroy
 
 from api_reference import TokenHandler, CategoryHandler, ExpenseHandler
 
@@ -14,15 +11,16 @@ from gi.repository import Gtk, GLib
 
 
 class AccountingPage(Gtk.ApplicationWindow):
-    def __init__(self, main_box):
+    def __init__(self, main_box, id=56):
         super().__init__()
-        print("ss")
+        self.status = 0
         self.main_box = Gtk.Box()
         self.main_box = main_box
         self.main_box.set_size_request(width=1000, height=600)
         self.input_boxs = dict()
         self.selected = ['', 0]
         self.rend_ui(main=self.main_box)
+        GLib.idle_add(self.load_transactions, id)
 
     def rend_ui(self, main):
         main.set_homogeneous(True)
@@ -172,13 +170,13 @@ class AccountingPage(Gtk.ApplicationWindow):
         v_space_box.set_vexpand(True)
         right_box.append(v_space_box)
 
-        save_button = Gtk.Button()
-        save_button.set_valign(Gtk.Align.END)
-        save_button.set_halign(Gtk.Align.END)
-        save_button.set_label("Save")
-        save_button.set_name("SaveButton")
-        save_button.connect("clicked", self.save_button_onclick)
-        right_box.append(save_button)
+        self.save_button = Gtk.Button()
+        self.save_button.set_valign(Gtk.Align.END)
+        self.save_button.set_halign(Gtk.Align.END)
+        self.save_button.set_label("Save")
+        self.save_button.set_name("SaveButton")
+        self.save_button.connect("clicked", self.save_button_onclick)
+        right_box.append(self.save_button)
 
         main.append(right_box)
 
@@ -188,6 +186,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             return True
         now_line_width = 0
         self.expense_button_list = list()
+        self.income_button_list = list()
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -242,7 +241,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             button.set_halign(Gtk.Align.START)
 
             button_width = button.get_preferred_size()[1].width + 10
-            self.expense_button_list.append(button)
+            self.income_button_list.append(button)
 
             button.connect("clicked", self.category_button_clicked, 1, category['id'])
             if now_line_width + button_width < left_box_width:
@@ -261,7 +260,8 @@ class AccountingPage(Gtk.ApplicationWindow):
     def category_button_clicked(self, button, type, category):
         self.selected = ["expense" if type == 0 else "income", category]
         print(self.selected)
-        for expense_button in self.expense_button_list:
+        tis_list = self.expense_button_list + self.income_button_list
+        for expense_button in tis_list:
             expense_button.set_name("CategoryButton")
         button.set_name("Selected")
         pass
@@ -287,7 +287,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             entry.set_text("0" if len(text) - 1 < 0 else text[:(len(text) - 1)])
             entry.set_position(-1)
 
-    def save_button_onclick(self, button):
+    def save_button_onclick(self, button, id=-1):
         texts = {}
         if self.selected[0] == '':
             button.set_label("Please select one category.")
@@ -304,25 +304,77 @@ class AccountingPage(Gtk.ApplicationWindow):
                 return
             texts[key] = text
             print(text)
-        response = ExpenseHandler().create_expense(token=self.token,transaction_type=self.selected[0], category=self.selected[1],
-                                        description=texts["description"], store=texts["store"],
-                                        amount=float(texts["amount"]), discount=float(texts["discount"]),
-                                        time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
-                                        detail=texts["detail"])
-        if response.status_code == 201:
-            print("SUCCESS")
+        if id == -1:
+            response = ExpenseHandler().create_expense(token=self.token, transaction_type=self.selected[0],
+                                                       category=self.selected[1],
+                                                       description=texts["description"], store=texts["store"],
+                                                       amount=float(texts["amount"]), discount=float(texts["discount"]),
+                                                       time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
+                                                       detail=texts["detail"])
         else:
-            button.set_label("Error.Please re-login.")
+            response = ExpenseHandler().update_expense(token=self.token, id=id, transaction_type=self.selected[0],
+                                                       category=self.selected[1],
+                                                       description=texts["description"], store=texts["store"],
+                                                       amount=float(texts["amount"]), discount=float(texts["discount"]),
+                                                       time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
+                                                       detail=texts["detail"])
 
+        if response.status_code == 201 or response.status_code == 200:
+            print("SUCCESS")
+            self.status = 1
+        else:
+            self.countdown = 5
+            button.set_label("Error.Please re-login.\nChange to login page in 5 seconds")
+            GLib.timeout_add(1000, self.re_login)
 
+    def load_transactions(self, id):
+        category = ""
+        transaction_type = ""
+        if id == -1:
+            return False
+        response = ExpenseHandler().get_expense(token=self.token, id=id)
+        if response.status_code != 200:
+            self.countdown = 5
+            self.save_button.set_label("Error.Please re-login.\nChange to login page in 5 seconds")
+            GLib.timeout_add(1000, self.re_login)
+            return
+        for key, value in response.json().items():
+            if key == 'id' or key == 'date':
+                continue
+            if key == 'transaction_type':
+                transaction_type = value
+                continue
+            if key == 'category':
+                category = value
+                continue
 
-"""token: str,
-   transaction_type: str,
-   category: int,
-   description: str,
-   store: str,
-   amount: float = 0,
-   discount: float = 0,
-   date: str = datetime.datetime.now().strftime("%Y-%m-%d"),
-   time: str = datetime.datetime.now().strftime("%H:%M:%S"),
-   detail: str = """""
+            if key == 'time':
+                time = value.split(":")
+                self.input_boxs["hour_spin_button"].set_text(time[0])
+                self.input_boxs["minute_spin_button"].set_text(time[1])
+                self.input_boxs["second_spin_button"].set_text(time[2])
+                continue
+            if key != "detail":
+                text = str(value)
+                self.input_boxs[key].set_text(text)
+            else:
+                buffer = self.input_boxs[key].get_buffer()
+                buffer.set_text(value)
+        if transaction_type == 'expense':
+            category_button_list = self.expense_button_list
+        else:
+            category_button_list = self.income_button_list
+        category_name = CategoryHandler().get_category(token=self.token, id=category)['name']
+        category_button = [x for x in category_button_list if x.get_label() == category_name][0]
+        self.category_button_clicked(category_button, transaction_type, category)
+        signal_handlers_destroy(self.save_button)
+        self.save_button.connect("clicked", self.save_button_onclick, id)
+
+    def re_login(self):
+        self.countdown -= 1
+        self.save_button.set_label(f"Error.Please re-login.\nChange to login page in {self.countdown} seconds")
+        if (self.countdown == 0):
+            self.status = 2
+            print("LOGIN")
+            return False
+        return True
