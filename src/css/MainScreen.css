@@ -1,28 +1,13 @@
-/*:root {*/
-/*    --text-color: #0d1618;*/
-/*    --background-color: #fcf6f4;*/
-/*    --primary-color: #c97046;*/
-/*    --secondary-color: #dfcd93;*/
-/*    --accent-color: #d4c36c;*/
-/*    --schedule-color:#9f9f9f;*/
-/*    --button-color:#b8b8b8;*/
-/*}*/
-
 :root {
-    --text-color: #E4E4E4; /* 主文字、標題文字 */
-    --background-color: #2D2D2D; /* 主背景色 */
-    --primary-color: #FF7043; /* 按鈕、重要點綴元素 */
-    --secondary-color: #616161; /* 輔助區域背景 */
-    --accent-color: #FFB74D; /* 強調按鈕或特殊狀態 */
-    --schedule-color: #424242; /* 次要區域背景色 */
-    --button-color: #607D8B; /* 通用按鈕背景 */
-    --bottom-button-box-color: #333333; /* BottomButtonBox 的背景色 */
+    --back: #2d2d2d; /* 淺灰深色背景 */
+    --mid: #3c3c3c; /* 中灰深色 */
+    --front: #4a4a4a; /* 前景灰色 */
+    --highlight: #7e9cff; /* 柔和高亮色 */
+    --accent: #ffd166; /* 柔和強調色 */
+    --text-primary: #f1f1f1; /* 主要文字顏色 */
+    --text-secondary: #d6d6d6; /* 次要文字顏色 */
 }
 
-#MainBox{
-    /*background-color: var(--background-color);*/
-    color: var(--text-color);
-}
 #ThirdPartySign{
     font-weight: bold;
     font-size: 50px;
@@ -52,4 +37,200 @@
 
 #GoogleSignIn:hover{
     transform: scale(1.05);
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--back);
+    margin: 0;
+    padding: 0;
+}
+
+#background {
+    background: linear-gradient(145deg, var(--back), var(--mid));
+    padding: 20px;
+}
+
+.container {
+    background: linear-gradient(145deg, var(--front), var(--mid));
+    border-radius: 20px;
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#label {
+    font-size: 30px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+#main_box {
+    background-color: var(--mid);
+    margin: 10px;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#label_box {
+    background-color: var(--front);
+    margin: 15px 10px 0;
+    border-radius: 7px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: var(--text-secondary);
+}
+
+#button {
+    border-radius: 50%;
+    background-color: var(--accent);
+    margin: 10px;
+    padding: 15px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+#clander_button{
+    color: white;
+    margin: 10px;
+    padding: 15px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+#clander_button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#clander_button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+#calender_object_button{
+    color: white;
+    margin: 3px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+#calender_object_button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+#selected{
+    background-color: var(--accent);
+    margin: 3px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+#calender_object_label{
+    color: white;
+}
+.label {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+.contain_box{
+    background: linear-gradient(145deg, var(--front), var(--mid));
+    border-radius: 20px;
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#Divider{
+    background: #656464;
+    border-radius: 10px;
+    /*margin: 2px;*/
+}
+
+#Block{
+    background: var(--schedule-color);
+    border-radius: 20px;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(145deg, var(--front), var(--mid));
+}
+
+#Block overshoot{
+    background: transparent;
+    border:none;
+}
+
+#CategoryButton{
+    margin: 5px;
+    padding: 7px 22px;
+    border-radius: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: var(--text-secondary);
+    /*box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);*/
+}
+
+#CategoryButton:hover{
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#Selected{
+    margin: 5px;
+    border-radius: 30px;
+    padding: 7px 22px;
+    box-shadow: 0 2px 5px rgba(224, 158, 61, 0.2);
+    background: var(--accent);
+    color: var(--back);
+}
+
+#Selected:hover{
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(224, 158, 61, 0.3);
+}
+
+#TypeLabel{
+    color: var(--text-secondary);
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px;
+}
+
+#TimeLabel{
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#InputBox{
+    background-color: var(--back);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+#SaveButton{
+    margin: 5px;
+    border-radius: 30px;
+    padding: 7px 22px;
+    box-shadow: 0 2px 5px rgba(224, 158, 61, 0.2);
+    background: var(--accent);
+    color: var(--back);
+}
+
+#SaveButton:hover{
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(224, 158, 61, 0.3);
 }

@@ -1,8 +1,6 @@
 import os
 import json
 import datetime
-from http.client import responses
-
 import requests
 from cryptography.fernet import Fernet
 
@@ -156,7 +154,7 @@ class ExpenseHandler:
             expense_url, headers=header
         )  # ! need to add headers(token)
         if response.status_code == 200:
-            print("取得記帳資料成功:", response.json())
+            # print("取得記帳資料成功:", response.json())
             return response.json()
         else:
             print("取得記帳資料失敗:", response.json())
@@ -184,7 +182,7 @@ class ExpenseHandler:
         ]
     """
 
-    def get_expense(self,token: str, id: int, params: json = None) -> json:
+    def get_expense(token: str, id: int, params: json = None) -> json:
         expense_url = f"{URL}transactions/{id}/" if id else f"{URL}transactions/"
         header = {"Authorization": f"Token {token}"}  # token is from login()
         response = session.get(
@@ -194,10 +192,25 @@ class ExpenseHandler:
         )  # ! need to add headers(token)
         if response.status_code == 200:
             print("取得特定記帳資料成功:", response.json())
-            # return response.json()
+            return response.json()
         else:
             print("取得特定記帳資料失敗:", response.json())
-            # return response.json()
+            return response.json()
+
+    def get_expense_response(token: str, id: int, params: json = None) -> json:
+        expense_url = f"{URL}transactions/{id}/" if id else f"{URL}transactions/"
+        header = {"Authorization": f"Token {token}"}  # token is from login()
+        response = session.get(
+            expense_url,
+            params=params,
+            headers=header,
+        )  # ! need to add headers(token)
+        if response.status_code == 200:
+            # print("取得特定記帳資料成功:", response.json())
+            pass;
+        else:
+            # print("取得特定記帳資料失敗:", response.json())
+            pass
         return response
 
     """
@@ -228,7 +241,41 @@ class ExpenseHandler:
     """
 
     def create_expense(
-            self,
+        token: str,
+        transaction_type: str,
+        category: int,
+        description: str,
+        store: str,
+        amount: float = 0,
+        discount: float = 0,
+        date: str = datetime.datetime.now().strftime("%Y-%m-%d"),
+        time: str = datetime.datetime.now().strftime("%H:%M:%S"),
+        detail: str = "",
+    ) -> json:
+        create_expense_url = f"{URL}transactions/"
+        new_expense_data = {
+            "transaction_type": transaction_type,
+            "category": category,
+            "description": description,
+            "store": store,
+            "amount": amount,
+            "discount": discount,
+            "date": date,
+            "time": time,
+            "detail": detail,
+        }
+        header = {"Authorization": f"Token {token}"}  # token is from login()
+        response = session.post(
+            create_expense_url, json=new_expense_data, headers=header
+        )  # ! need to add headers(token)
+        if response.status_code == 201:
+            # print("新增記帳資料成功:", response.json())
+            return response.json()
+        else:
+            print("新增記帳資料失敗:", response.json())
+            return response.json()
+
+    def create_expense_response(
             token: str,
             transaction_type: str,
             category: int,
@@ -257,12 +304,13 @@ class ExpenseHandler:
             create_expense_url, json=new_expense_data, headers=header
         )  # ! need to add headers(token)
         if response.status_code == 201:
-            print("新增記帳資料成功:", response.json())
+            # print("新增記帳資料成功:", response.json())
+            pass
             # return response.json()
         else:
             print("新增記帳資料失敗:", response.json())
-            # return response.json()
         return response
+
     """
     更新記帳資料
     update_expense(
@@ -291,7 +339,42 @@ class ExpenseHandler:
     """
 
     def update_expense(
-            self,
+        token: str,
+        id: int,
+        transaction_type: str,
+        category: int,
+        description: str,
+        store: str,
+        amount: float = 0,
+        discount: float = 0,
+        date: str = datetime.datetime.now().strftime("%Y-%m-%d"),
+        time: str = datetime.datetime.now().strftime("%H:%M:%S"),
+        detail: str = "",
+    ) -> json:
+        update_expense_url = f"{URL}transactions/{id}/"
+        updated_expense_data = {
+            "transaction_type": transaction_type,
+            "category": category,
+            "description": description,
+            "store": store,
+            "amount": amount,
+            "discount": discount,
+            "date": date,
+            "time": time,
+            "detail": detail,
+        }
+        header = {"Authorization": f"Token {token}"}  # token is from login()
+        response = session.put(
+            update_expense_url, json=updated_expense_data, headers=header
+        )  # ! need to add headers(token)
+        if response.status_code == 200:
+            print("更新記帳資料成功:", response.json())
+            return response.json()
+        else:
+            print("更新記帳資料失敗:", response.json())
+            return response.json()
+
+    def update_expense_response(
             token: str,
             id: int,
             transaction_type: str,
@@ -325,7 +408,6 @@ class ExpenseHandler:
             # return response.json()
         else:
             print("更新記帳資料失敗:", response.json())
-            # return response.json()
         return response
 
     """
@@ -369,7 +451,7 @@ class CategoryHandler:
             categories_url, headers=header
         )  # ! need to add headers(token)
         if response.status_code == 200:
-            print("取得所有分類成功:", response.json())
+            # print("取得所有分類成功:", response.json())
             return response.json()
         else:
             print("取得所有分類失敗:", response.json())
@@ -386,14 +468,14 @@ class CategoryHandler:
     ]
     """
 
-    def get_category(self,token: str, id: int = None, params: json = None) -> json:
+    def get_category(token: str, id: int = None, params: json = None) -> json:
         category_url = f"{URL}categories/{id}/" if id else f"{URL}categories/"
         header = {"Authorization": f"Token {token}"}  # token is from login()
         response = session.get(
             category_url, params=params, headers=header
         )  # ! need to add headers(token)
         if response.status_code == 200:
-            print("取得特定分類成功:", response.json())
+            # print("取得特定分類成功:", response.json())
             return response.json()
         else:
             print("取得特定分類失敗:", response.json())
@@ -471,31 +553,25 @@ class CategoryHandler:
 
 
 # if __name__ == "__main__":
-    # TokenHandler.generate_and_save_key()  #! 第一次運行時需要生成金鑰
-    # UserAuthHandler.register("test", "123", "test.gmail.com")
-    # token = UserAuthHandler.login("test", "123")["token"]
-    # TokenHandler.save_token_encrypted(token)  # 登入成功後保存 Token
-    # token = TokenHandler.load_token_encrypted()  # 讀取 Token
-    # ExpenseHandler.get_all_expense(token)
-    # ExpenseHandler.update_expense(token, 1, "expense", 2, "晚餐", "肯德基", 299, 0)
-    # ExpenseHandler.get_expense(token, 15)
-    # ExpenseHandler.get_expense(
-    #     token,
-    #     None,
-    #     {"category": 1, "start_date": "2021-01-01", "end_date": "2021-12-31"},
-    # )
-    # ExpenseHandler.create_expense(token, "expense", 1, "午餐", "麥當勞", 100, 0)
-    # ExpenseHandler.delete_expense(token, 14)
-    # CategoryHandler.get_all_categories(token)
-    # CategoryHandler.get_category(token, 1)
-    # CategoryHandler.get_category(token, None, {"category_type": "income"})
-    # CategoryHandler.create_category(token, "測試", "income")
-    # CategoryHandler.create_category(token, "測試2", "income2")
-    # CategoryHandler.create_category(token, "測試3", "income3")
-    # CategoryHandler.create_category(token, "測試4", "income4")
-    # CategoryHandler.create_category(token, "測試5", "income5")
-    # CategoryHandler.create_category(token, "測試6", "income6")
-    # CategoryHandler.create_category(token, "測試7", "income7")
-    # CategoryHandler.update_category(token, 24, "測試", "expense")
-    # CategoryHandler.delete_category(token, 24)
-    # UserAuthHandler.logout(token)
+#     TokenHandler.generate_and_save_key()  #! 第一次運行時需要生成金鑰
+#     UserAuthHandler.register("test", "123", "test.gmail.com")
+#     token = UserAuthHandler.login("test", "123")["token"]
+#     TokenHandler.save_token_encrypted(token)  # 登入成功後保存 Token
+#     token = TokenHandler.load_token_encrypted()  # 讀取 Token
+#     ExpenseHandler.get_all_expense(token)
+#     ExpenseHandler.update_expense(token, 1, "expense", 2, "晚餐", "肯德基", 299, 0)
+#     ExpenseHandler.get_expense(token, 15)
+#     ExpenseHandler.get_expense(
+#         token,
+#         None,
+#         {"category": 1, "start_date": "2021-01-01", "end_date": "2021-12-31"},
+#     )
+#     ExpenseHandler.create_expense(token, "expense", 1, "午餐", "麥當勞", 100, 0)
+#     ExpenseHandler.delete_expense(token, 14)
+#     CategoryHandler.get_all_categories(token)
+#     CategoryHandler.get_category(token, 1)
+#     CategoryHandler.get_category(token, None, {"category_type": "income"})
+#     CategoryHandler.create_category(token, "測試", "income")
+#     CategoryHandler.update_category(token, 24, "測試", "expense")
+#     CategoryHandler.delete_category(token, 24)
+#     UserAuthHandler.logout(token)

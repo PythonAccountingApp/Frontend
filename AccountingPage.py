@@ -11,16 +11,18 @@ from gi.repository import Gtk, GLib
 
 
 class AccountingPage(Gtk.ApplicationWindow):
-    def __init__(self, main_box, id=62):
+    def __init__(self, main_box, date,stack, id=-1):
         super().__init__()
         self.status = 0
+        self.date = date
+        self.id = id
+        self.stack = stack
         self.main_box = Gtk.Box()
         self.main_box = main_box
-        self.main_box.set_size_request(width=1000, height=600)
+        self.main_box.set_size_request(width=1000, height=800)
         self.input_boxs = dict()
         self.selected = ['', 0]
         self.rend_ui(main=self.main_box)
-        GLib.idle_add(self.load_transactions, id)
 
     def rend_ui(self, main):
         main.set_homogeneous(True)
@@ -254,6 +256,7 @@ class AccountingPage(Gtk.ApplicationWindow):
                 hbox.append(button)
 
         self.income_box.append(hbox)
+        GLib.idle_add(self.load_transactions, self.id)
 
         return False  # 停止重複執行
 
@@ -304,21 +307,28 @@ class AccountingPage(Gtk.ApplicationWindow):
                 return
             texts[key] = text
         if id == -1:
-            response = ExpenseHandler().create_expense(token=self.token, transaction_type=self.selected[0],
-                                                       category=self.selected[1],
-                                                       description=texts["description"], store=texts["store"],
-                                                       amount=round(float(texts["amount"]),2), discount=round(float(texts["discount"]),2),
-                                                       time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
-                                                       detail=texts["detail"])
+            response = ExpenseHandler.create_expense_response(token=self.token, transaction_type=self.selected[0],
+                                                              category=self.selected[1],
+                                                              description=texts["description"], store=texts["store"],
+                                                              amount=round(float(texts["amount"]), 2),
+                                                              discount=round(float(texts["discount"]), 2),
+                                                              time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
+                                                              date=self.date,
+                                                              detail=texts["detail"])
         else:
-            response = ExpenseHandler().update_expense(token=self.token, id=id, transaction_type=self.selected[0],
-                                                       category=self.selected[1],
-                                                       description=texts["description"], store=texts["store"],
-                                                       amount=round(float(texts["amount"]),2), discount=round(float(texts["discount"]),2),
-                                                       time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
-                                                       detail=texts["detail"])
+            response = ExpenseHandler.update_expense_response(token=self.token, id=id,
+                                                              transaction_type=self.selected[0],
+                                                              category=self.selected[1],
+                                                              description=texts["description"], store=texts["store"],
+                                                              amount=round(float(texts["amount"]), 2),
+                                                              discount=round(float(texts["discount"]), 2),
+                                                              time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
+                                                              date=self.date,
+                                                              detail=texts["detail"])
 
         if response.status_code == 201 or response.status_code == 200:
+            self.stack.remove(self.main_box)
+            self.stack.set_visible_child_name("MainWindow")
             print("SUCCESS")
             self.status = 1
         else:
@@ -331,11 +341,12 @@ class AccountingPage(Gtk.ApplicationWindow):
         transaction_type = ""
         if id == -1:
             return False
-        response = ExpenseHandler().get_expense(token=self.token, id=id)
+        response = ExpenseHandler.get_expense_response(token=self.token, id=id)
         if response.status_code != 200:
             self.countdown = 5
             self.save_button.set_label("Error.Please re-login.\nChange to login page in 5 seconds")
             GLib.timeout_add(1000, self.re_login)
+            print(id)
             return
         for key, value in response.json().items():
             if key == 'id' or key == 'date':
@@ -359,12 +370,8 @@ class AccountingPage(Gtk.ApplicationWindow):
             else:
                 buffer = self.input_boxs[key].get_buffer()
                 buffer.set_text(value)
-        if transaction_type == 'expense':
-            category_button_list = self.expense_button_list
-        else:
-            category_button_list = self.income_button_list
-        category_name = CategoryHandler().get_category(token=self.token, id=category)['name']
-        print(transaction_type)
+        category_button_list = self.expense_button_list + self.income_button_list
+        category_name = CategoryHandler.get_category(token=self.token, id=category)['name']
         category_button = [x for x in category_button_list if x.get_label() == category_name][0]
         self.category_button_clicked(category_button, transaction_type, category)
         signal_handlers_destroy(self.save_button)

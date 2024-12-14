@@ -1,6 +1,7 @@
 import sys
 import threading
 import webbrowser
+from pickle import GLOBAL
 
 import gi
 import requests
@@ -15,6 +16,7 @@ from PyThreadKiller import PyThreadKiller
 from AccountingPage import AccountingPage
 from api_reference import TokenHandler
 from login_server import LoginServer
+from main_screen import MainWindow
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -23,8 +25,7 @@ from gi.repository import Gtk, Gdk, Adw
 import os
 import signal
 
-
-class MainWindow(Gtk.ApplicationWindow):
+class ThirdPartyLoginPage(Gtk.ApplicationWindow):
     def githubLoginThread(self):
         if not self.login_server.server_status:
             self.login_server.LoginServerStart()
@@ -61,15 +62,15 @@ class MainWindow(Gtk.ApplicationWindow):
             Gtk.StyleContext().remove_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider)
 
             self.accountingCssProvider = Gtk.CssProvider()
-            self.accountingCssProvider.load_from_path("src/css/AccountingAdd.css")
+            self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
             self.stack.remove(self.stack.get_child_by_name("ThirdLogin"))
             main_box = Gtk.Box()
             main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-            self.stack.add_named(main_box, "AccountingAdd")
-            AccountingPage(main_box)
-
+            self.stack.add_named(main_box, "MainWindow")
+            # AccountingPage(main_box)
+            MainWindow(main_box,self.stack)
             self.login_server.callbackData = None
             self.login_server.server_status = False
             self.login_server.serverThread.kill()
@@ -112,14 +113,15 @@ class MainWindow(Gtk.ApplicationWindow):
             Gtk.StyleContext().remove_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider)
 
             self.accountingCssProvider = Gtk.CssProvider()
-            self.accountingCssProvider.load_from_path("src/css/AccountingAdd.css")
+            self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
             self.stack.remove(self.stack.get_child_by_name("ThirdLogin"))
             main_box = Gtk.Box()
             main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-            self.stack.add_named(main_box, "AccountingAdd")
-            AccountingPage(main_box)
+            self.stack.add_named(main_box, "MainWindow")
+            # AccountingPage(main_box)
+            MainWindow(main_box,self.stack)
 
             self.login_server.callbackData = None
             self.login_server.server_status = False
@@ -157,14 +159,15 @@ class MainWindow(Gtk.ApplicationWindow):
         if response.status_code == 200:
             # Login Success
             self.accountingCssProvider = Gtk.CssProvider()
-            self.accountingCssProvider.load_from_path("src/css/AccountingAdd.css")
+            self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
             main_box = Gtk.Box()
             main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-            self.stack.add_named(main_box, "AccountingAdd")
+            self.stack.add_named(main_box, "MainWindow")
             self.set_child(self.stack)
-            AccountingPage(main_box)
+            # AccountingPage(main_box,date="2024")
+            MainWindow(main_box,self.stack)
         else:
             # Login Fail
             # Main Box
@@ -198,7 +201,7 @@ class MainWindow(Gtk.ApplicationWindow):
             main_box.append(google_sign_in_button)
 
             self.thirdLoginCssProvider = Gtk.CssProvider()
-            self.thirdLoginCssProvider.load_from_path("src/css/ThirdLogin.css")
+            self.thirdLoginCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
@@ -218,9 +221,9 @@ class MyApp(Adw.Application):
         self.connect("window-removed", self.on_destroy)
 
     def on_activate(self, app):
-        self.win = MainWindow(application=app)
-        self.win.set_name("MainWindow")
-        self.win.set_size_request(600, 500)
+        self.win = ThirdPartyLoginPage(application=app)
+        self.win.set_name("ThirdPartyLoginPage")
+        self.win.set_size_request(700, 500)
         self.win.present()
         self.win.connect("close-request", self.on_destroy)
 
