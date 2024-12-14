@@ -20,11 +20,6 @@ from cryptography.fernet import Fernet
 from api_reference import TokenHandler,ExpenseHandler,CategoryHandler
 from typing import cast
 
-
-# css_provider = Gtk.CssProvider()
-# css_provider.load_from_path('src/css/MainScreen.css')
-# Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self,main_window,stack):
         super().__init__()
@@ -671,15 +666,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         GLib.idle_add(self.accounting_thread,accounting_page)
 
-class MyApp(Adw.Application):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.connect('activate', self.on_activate)
-
-    def on_activate(self, app):
-        self.win = MainWindow(application=app)
-        self.win.present()
-
 class C_data:
     def __init__(self, id, transaction_type,category,amount,discount,description,store,time,detail):
         self.id=id
@@ -691,8 +677,3 @@ class C_data:
         self.store=store
         self.time=time
         self.detail=detail
-
-
-
-# app = MyApp(application_id="com.example.GtkApplication")
-# app.run(sys.argv)
