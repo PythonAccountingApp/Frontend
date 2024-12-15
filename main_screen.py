@@ -286,10 +286,6 @@ class MainWindow(Gtk.ApplicationWindow):
                     self.c_delete_widget_dict[edit_button]=category_json['name']
                     self.box_store_dict[category_json['name']]+=1
 
-
-
-
-
     def f_NextMonth(self,button):
         self.now_month+=1
         if(self.now_month>12):
