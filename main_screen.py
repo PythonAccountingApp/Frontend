@@ -543,7 +543,8 @@ class MainWindow(Gtk.ApplicationWindow):
     def accounting_thread(self,accounting_page):
         if accounting_page.status == 0:
             return True
-        GLib.idle_add(self.creat_widget)
+        if accounting_page.status == 1:
+            GLib.idle_add(self.creat_widget)
         return False
 
     def creat_widget(self):

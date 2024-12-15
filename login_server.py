@@ -55,5 +55,3 @@ class LoginServer:
         print("Server Start")
         self.server_status = True
         self.serverThread.start()
-
-# 2f56277d2ac07844952f

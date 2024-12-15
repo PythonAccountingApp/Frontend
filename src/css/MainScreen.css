@@ -39,7 +39,7 @@
     transform: scale(1.05);
 }
 
-body {
+#body {
     font-family: 'Arial', sans-serif;
     color: var(--text-primary);
     background-color: var(--back);
@@ -92,6 +92,7 @@ body {
     border: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: black;
 }
 
 #button:hover {
@@ -132,6 +133,7 @@ body {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 #selected{
+    color: black;
     background-color: var(--accent);
     margin: 3px;
     border: none;
@@ -217,6 +219,7 @@ body {
 
 #InputBox{
     background-color: var(--back);
+    color: var(--text-primary);
     border-radius: 10px;
     padding: 15px;
 }

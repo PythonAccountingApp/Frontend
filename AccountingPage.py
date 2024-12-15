@@ -172,13 +172,27 @@ class AccountingPage(Gtk.ApplicationWindow):
         v_space_box.set_vexpand(True)
         right_box.append(v_space_box)
 
+        h_box = Gtk.Box()
+        h_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+        h_box.set_spacing(5)
+        h_box.set_halign(Gtk.Align.END)
+
+        close_button = Gtk.Button()
+        close_button.set_valign(Gtk.Align.END)
+        close_button.set_halign(Gtk.Align.END)
+        close_button.set_label("Cancel")
+        close_button.set_name("SaveButton")
+        close_button.connect("clicked", self.close_button_onclick)
+        h_box.append(close_button)
+
         self.save_button = Gtk.Button()
         self.save_button.set_valign(Gtk.Align.END)
         self.save_button.set_halign(Gtk.Align.END)
         self.save_button.set_label("Save")
         self.save_button.set_name("SaveButton")
         self.save_button.connect("clicked", self.save_button_onclick)
-        right_box.append(self.save_button)
+        h_box.append(self.save_button)
+        right_box.append(h_box)
 
         main.append(right_box)
 
@@ -333,7 +347,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             self.status = 1
         else:
             self.countdown = 5
-            button.set_label("Error.Please re-login.\nChange to login page in 5 seconds")
+            button.set_label("Error.Please re-login.\nChange to home page in 5 seconds")
             GLib.timeout_add(1000, self.re_login)
 
     def load_transactions(self, id):
@@ -379,9 +393,17 @@ class AccountingPage(Gtk.ApplicationWindow):
 
     def re_login(self):
         self.countdown -= 1
-        self.save_button.set_label(f"Error.Please re-login.\nChange to login page in {self.countdown} seconds")
+        self.save_button.set_label(f"Error.Please re-login.\nChange to home page in {self.countdown} seconds")
         if (self.countdown == 0):
+            self.stack.remove(self.main_box)
+            self.stack.set_visible_child_name("MainWindow")
             self.status = 2
             print("LOGIN")
             return False
         return True
+
+    def close_button_onclick(self,button):
+        self.stack.remove(self.main_box)
+        self.stack.set_visible_child_name("MainWindow")
+        print("SUCCESS")
+        self.status = 2

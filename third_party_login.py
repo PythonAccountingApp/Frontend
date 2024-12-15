@@ -225,6 +225,7 @@ class MyApp(Adw.Application):
         self.win.set_name("ThirdPartyLoginPage")
         self.win.set_size_request(700, 500)
         self.win.present()
+        self.win.set_name("body")
         self.win.connect("close-request", self.on_destroy)
 
     def on_destroy(self, data):
