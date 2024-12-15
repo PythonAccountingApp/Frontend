@@ -237,3 +237,50 @@
     transform: scale(1.05);
     box-shadow: 0 2px 5px rgba(224, 158, 61, 0.3);
 }
+#switcher button{
+    font-size: 15px;
+    margin: 5px;
+    color: white;
+}
+.entry{
+    color: white;
+}
+
+#dropbox{
+    background-color: var(--front);
+    color: white;
+}
+
+.c_button{
+    color: white;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.c_button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.c_button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.button{
+    color: white;
+    margin: 10px;
+    padding: 15px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}

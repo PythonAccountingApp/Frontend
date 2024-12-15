@@ -65,10 +65,10 @@ class ThirdPartyLoginPage(Gtk.ApplicationWindow):
             self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            self.stack.remove(self.stack.get_child_by_name("ThirdLogin"))
             main_box = Gtk.Box()
             main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
             self.stack.add_named(main_box, "MainWindow")
+            self.stack.set_visible_child_name("MainWindow")
             # AccountingPage(main_box)
             MainWindow(main_box,self.stack)
             self.login_server.callbackData = None
@@ -116,10 +116,10 @@ class ThirdPartyLoginPage(Gtk.ApplicationWindow):
             self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            self.stack.remove(self.stack.get_child_by_name("ThirdLogin"))
             main_box = Gtk.Box()
             main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
             self.stack.add_named(main_box, "MainWindow")
+            self.stack.set_visible_child_name("MainWindow")
             # AccountingPage(main_box)
             MainWindow(main_box,self.stack)
 
@@ -156,62 +156,58 @@ class ThirdPartyLoginPage(Gtk.ApplicationWindow):
         response = session.get(
             categories_url, headers=header
         )
+        # Main Box
+        self.accountingCssProvider = None
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        main_box.set_hexpand(True)
+        main_box.set_vexpand(True)
+        main_box.set_halign(Gtk.Align.CENTER)
+        main_box.set_valign(Gtk.Align.CENTER)
+        main_box.set_name("MainBox")
+        self.stack.add_named(main_box, "ThirdLogin")
+        self.set_child(self.stack)
+        # Label: Third Party Sign In
+        third_party_sign = Gtk.Label(label="Third Party Sign In")
+        third_party_sign.set_name("ThirdPartySign")
+        main_box.append(third_party_sign)
+
+        # Github Sign In Button
+        github_sign_in_button = Gtk.Button()
+        github_sign_in_button.set_name("GithubSignIn")
+        github_sign_in_button.set_size_request(215, 65)
+        github_sign_in_button.set_halign(Gtk.Align.CENTER)
+        github_sign_in_button.set_valign(Gtk.Align.FILL)
+        main_box.append(github_sign_in_button)
+
+        # Github Sign In Button
+        google_sign_in_button = Gtk.Button()
+        google_sign_in_button.set_name("GoogleSignIn")
+        google_sign_in_button.set_size_request(215, 65)
+        google_sign_in_button.set_halign(Gtk.Align.CENTER)
+        google_sign_in_button.set_valign(Gtk.Align.FILL)
+        main_box.append(google_sign_in_button)
+
+        self.thirdLoginCssProvider = Gtk.CssProvider()
+        self.thirdLoginCssProvider.load_from_path("src/css/MainScreen.css")
+        Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider,
+                                                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        github_sign_in_button.connect("clicked", self.githubLogin)
+        google_sign_in_button.connect("clicked", self.googleLogin)
+
+        self.login_server = LoginServer()
         if response.status_code == 200:
             # Login Success
             self.accountingCssProvider = Gtk.CssProvider()
             self.accountingCssProvider.load_from_path("src/css/MainScreen.css")
             Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.accountingCssProvider,
                                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            main_box = Gtk.Box()
-            main_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-            self.stack.add_named(main_box, "MainWindow")
-            self.set_child(self.stack)
+            main_screen_box = Gtk.Box()
+            main_screen_box.new(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+            self.stack.add_named(main_screen_box, "MainWindow")
+            self.stack.set_visible_child_name("MainWindow")
             # AccountingPage(main_box,date="2024")
-            MainWindow(main_box,self.stack)
-        else:
-            # Login Fail
-            # Main Box
-            self.accountingCssProvider = None
-            main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            main_box.set_hexpand(True)
-            main_box.set_vexpand(True)
-            main_box.set_halign(Gtk.Align.CENTER)
-            main_box.set_valign(Gtk.Align.CENTER)
-            main_box.set_name("MainBox")
-
-            # Label: Third Party Sign In
-            third_party_sign = Gtk.Label(label="Third Party Sign In")
-            third_party_sign.set_name("ThirdPartySign")
-            main_box.append(third_party_sign)
-
-            # Github Sign In Button
-            github_sign_in_button = Gtk.Button()
-            github_sign_in_button.set_name("GithubSignIn")
-            github_sign_in_button.set_size_request(215, 65)
-            github_sign_in_button.set_halign(Gtk.Align.CENTER)
-            github_sign_in_button.set_valign(Gtk.Align.FILL)
-            main_box.append(github_sign_in_button)
-
-            # Github Sign In Button
-            google_sign_in_button = Gtk.Button()
-            google_sign_in_button.set_name("GoogleSignIn")
-            google_sign_in_button.set_size_request(215, 65)
-            google_sign_in_button.set_halign(Gtk.Align.CENTER)
-            google_sign_in_button.set_valign(Gtk.Align.FILL)
-            main_box.append(google_sign_in_button)
-
-            self.thirdLoginCssProvider = Gtk.CssProvider()
-            self.thirdLoginCssProvider.load_from_path("src/css/MainScreen.css")
-            Gtk.StyleContext().add_provider_for_display(Gdk.Display.get_default(), self.thirdLoginCssProvider,
-                                                        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
-            github_sign_in_button.connect("clicked", self.githubLogin)
-            google_sign_in_button.connect("clicked", self.googleLogin)
-
-
-            self.stack.add_named(main_box, "ThirdLogin")
-            self.set_child(self.stack)
-            self.login_server = LoginServer()
+            MainWindow(main_screen_box,self.stack)
 
 
 class MyApp(Adw.Application):

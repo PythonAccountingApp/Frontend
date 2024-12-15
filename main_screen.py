@@ -12,12 +12,13 @@ import requests
 import time
 
 from AccountingPage import AccountingPage
+from Type_Adjusting import TypeAdjusting
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gdk, Adw, GLib
 from cryptography.fernet import Fernet
-from api_reference import TokenHandler,ExpenseHandler,CategoryHandler
+from api_reference import TokenHandler,ExpenseHandler,CategoryHandler,UserAuthHandler
 from typing import cast
 
 class MainWindow(Gtk.ApplicationWindow):
@@ -153,17 +154,37 @@ class MainWindow(Gtk.ApplicationWindow):
         self.layout.set_hexpand(True)
         self.layout_scrollwindow.set_child(self.layout)
 
+        box=Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,spacing=5,halign=Gtk.Align.END)
+        self.show_revealer_btn=Gtk.Button(label="◀",css_classes=['button'])
+
+        self.revealer=Gtk.Revealer(transition_type=Gtk.RevealerTransitionType.SLIDE_LEFT)
+        self.btn_container=Gtk.Box(valign=Gtk.Align.END,halign=Gtk.Align.END,orientation=Gtk.Orientation.HORIZONTAL,spacing=10)
+        self.revealer.set_child(self.btn_container)
+
         self.add_layout=Gtk.Button()
         self.add_layout.set_name("button")
         self.add_layout.set_label("+")
-        self.add_layout.set_valign(Gtk.Align.END)
-        self.add_layout.set_halign(Gtk.Align.END)
         self.add_layout.set_size_request(80,80)
-        self.scrollwindow_container.append(self.add_layout)
         self.add_layout.connect("clicked",self.add)
+
+        self.logout_btn=Gtk.Button(label="logout",css_classes=['button'])
+
+        self.revise_btn=Gtk.Button(label="revise type",css_classes=['button'])
+
+        self.btn_container.append(self.logout_btn)
+        self.btn_container.append(self.revise_btn)
+        self.btn_container.append(self.add_layout)
+
+        box.append(self.show_revealer_btn)
+        box.append(self.revealer)
+
+        self.scrollwindow_container.append(box)
 
         self.next_month.connect("clicked",self.f_NextMonth)
         self.last_month.connect("clicked",self.f_LastMonth)
+        self.show_revealer_btn.connect("clicked",self.show_revealer)
+        self.revise_btn.connect("clicked",self.f_type_adjusting)
+        self.logout_btn.connect("clicked",self.f_logout)
 
         date={"start_date":f"{self.select_year}-{self.select_month}-{self.select_day}",
               "end_date":f"{self.select_year}-{self.select_month}-{self.select_day}"}
@@ -182,15 +203,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         for i in get_jason:
             pass
-            # k=0
-            # time_len=0
-            # for j in i['time']:
-            #     if(j==":"):
-            #         k+=1
-            #     if(k==2):
-            #         break
-            #     time_len+=1
-            # s_time=str(i['time'])[:time_len]
             S_data=C_data(i['id'],i['transaction_type'],i['category'],i['amount'],i['discount'],i['description'],i['store'],i['time'],i['detail'])
             self.array[int(i['category'])].append(S_data)
 
@@ -659,13 +671,32 @@ class MainWindow(Gtk.ApplicationWindow):
         return False
 
     def add(self,button):
-        # ExpenseHandler.create_expense(self.token,"expense",9,"test","test",200,25,datetime.datetime.now().strftime("%Y-%m-%d"),datetime.datetime.now().strftime("%H:%M:%S"),"aaaaaaaaaaaa")
         accounting_box = Gtk.Box()
         self.stack.add_named(accounting_box, "AccountingPage")
         self.stack.set_visible_child_name("AccountingPage")
         accounting_page = AccountingPage(accounting_box,date=f"{self.select_year}-{self.select_month}-{self.select_day}",id=None,stack=self.stack)
 
         GLib.idle_add(self.accounting_thread,accounting_page)
+
+    def show_revealer(self,button):
+        is_visible = self.revealer.get_reveal_child()
+        self.revealer.set_reveal_child(not is_visible)
+        if(is_visible==True):
+            button.set_label("◀")
+        else:
+            button.set_label("▶")
+
+    def f_type_adjusting(self,button):
+        TypeAdjusting()
+
+    def f_logout(self,button):
+        UserAuthHandler.logout(self.token)
+        self.stack.remove(self.stack.get_child_by_name("MainWindow"))
+        self.stack.set_visible_child_name("ThirdLogin")
+        # self.stack.get_child_by_name("ThirdLogin").set_size_request(700, 500)
+        print("SUCCESS")
+        os.remove("token.enc")
+
 
 class C_data:
     def __init__(self, id, transaction_type,category,amount,discount,description,store,time,detail):
