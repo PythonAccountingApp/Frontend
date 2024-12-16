@@ -316,16 +316,13 @@ class AccountingPage(Gtk.ApplicationWindow):
                 buffer = value.get_buffer()
                 startIter, endIter = buffer.get_bounds()
                 text = buffer.get_text(startIter, endIter, False)
-            if text.isspace() or len(text) == 0:
-                button.set_label("All fields need to be filled in with values.")
-                return
             texts[key] = text
         if id == -1:
             response = ExpenseHandler.create_expense_response(token=self.token, transaction_type=self.selected[0],
                                                               category=self.selected[1],
                                                               description=texts["description"], store=texts["store"],
-                                                              amount=round(float(texts["amount"]), 2),
-                                                              discount=round(float(texts["discount"]), 2),
+                                                              amount=round(float(texts["amount"]), 2) if texts["amount"] else 0,
+                                                              discount=round(float(texts["discount"]), 2) if texts["discount"] else 0,
                                                               time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
                                                               date=self.date,
                                                               detail=texts["detail"])
@@ -334,8 +331,8 @@ class AccountingPage(Gtk.ApplicationWindow):
                                                               transaction_type=self.selected[0],
                                                               category=self.selected[1],
                                                               description=texts["description"], store=texts["store"],
-                                                              amount=round(float(texts["amount"]), 2),
-                                                              discount=round(float(texts["discount"]), 2),
+                                                              amount=round(float(texts["amount"]), 2) if texts["amount"] else 0,
+                                                              discount=round(float(texts["discount"]), 2) if texts["discount"] else 0,
                                                               time=f"{texts["hour_spin_button"].zfill(2)}:{texts["minute_spin_button"].zfill(2)}:{texts["second_spin_button"].zfill(2)}",
                                                               date=self.date,
                                                               detail=texts["detail"])
