@@ -1,20 +1,13 @@
-import subprocess
 import sys
 import threading
 import webbrowser
-from pickle import GLOBAL
 
 import gi
 import requests
 import json
 
-from gi.repository.Gtk import CssProvider
-
-import api_reference
-
 from PyThreadKiller import PyThreadKiller
 
-from AccountingPage import AccountingPage
 from api_reference import TokenHandler
 from login_server import LoginServer
 from main_screen import MainWindow

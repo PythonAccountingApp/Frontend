@@ -1,15 +1,7 @@
-import sys
-import threading
-from inspect import stack
-from tkinter.font import names
-
 import gi
 import calendar
 import datetime
 import os
-import json
-import requests
-import time
 
 from AccountingPage import AccountingPage
 from Type_Adjusting import TypeAdjusting
@@ -17,7 +9,6 @@ from Type_Adjusting import TypeAdjusting
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gdk, Adw, GLib
-from cryptography.fernet import Fernet
 from api_reference import TokenHandler,ExpenseHandler,CategoryHandler,UserAuthHandler
 from typing import cast
 
