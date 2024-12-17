@@ -350,7 +350,7 @@ class AccountingPage(Gtk.ApplicationWindow):
     def load_transactions(self, id):
         category = ""
         transaction_type = ""
-        if id == -1:
+        if id == -1 or id is None:
             return False
         response = ExpenseHandler.get_expense_response(token=self.token, id=id)
         if response.status_code != 200:
@@ -359,7 +359,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             GLib.timeout_add(1000, self.re_login)
             print(id)
             return
-        for key, value in response.json()[0].items():
+        for key, value in response.json().items():
             if key == 'id' or key == 'date':
                 continue
             if key == 'transaction_type':
