@@ -359,7 +359,7 @@ class AccountingPage(Gtk.ApplicationWindow):
             GLib.timeout_add(1000, self.re_login)
             print(id)
             return
-        for key, value in response.json().items():
+        for key, value in response.json()[0].items():
             if key == 'id' or key == 'date':
                 continue
             if key == 'transaction_type':
