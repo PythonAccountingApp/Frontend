@@ -10,9 +10,6 @@ pip3 install pycairo PyGObject requests waitress flask PyThreadKiller
 ## 結構
 ```
 Frontend
-├── AccountingAdd
-│   ├── ui.css
-│   └── ui.ui
 ├── AccountingPage.py
 ├── README.md
 ├── Templates
@@ -20,15 +17,22 @@ Frontend
 │   ├── login_failure_github.html
 │   ├── login_failure_google.html
 │   └── login_successful.html
+├── Type_Adjusting.py
+├── __init__.py
+├── api_reference.py
 ├── config.json
+├── key.key
+├── login.py
 ├── login_server.py
-├── main.py
-├── reset_password_frontend.py
+├── main_screen.py
+├── reset_password.py
+├── sign_up.py
 ├── src
 │   ├── css
-│   │   └── ThirdLogin.css
+│   │   ├── MainScreen.css
+│   │   ├── github.png
+│   │   └── google.png
 │   └── web_dark_rd_ctn.svg
 ├── ui.css
 └── ui.ui
-
 ```
